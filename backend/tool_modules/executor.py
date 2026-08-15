@@ -1,16 +1,25 @@
 from backend.core.tool_runner import runner
 
 TOOL_COMMANDS = {
-    "nmap":    ["nmap"],
-    "nikto":   ["perl", "/opt/nikto/program/nikto.pl"],
-    "tcpdump": ["tcpdump"],
-    "sqlmap":  ["python3", "/opt/sqlmap/sqlmap.py"],
-    "hydra":   ["hydra"],
-    "john":    ["john"],
-    "hashcat": ["hashcat", "--force"],
-    "rsf":     ["python3", "/opt/routersploit/rsf.py"],
-    "burp":    ["xvfb-run", "-a", "java", "-jar", "/opt/BurpSuiteCommunity.jar"],
-    "msf":     ["msfconsole", "-q", "-x"],
+    "nmap":      ["nmap"],
+    "nikto":     ["nikto"],
+    "sqlmap":    ["sqlmap"],
+    "hydra":     ["hydra"],
+    "john":      ["john"],
+    "hashcat":   ["hashcat", "--force"],
+    "tcpdump":   ["tcpdump"],
+    "dirb":      ["dirb"],
+    "ffuf":      ["ffuf"],
+    "whatweb":   ["whatweb"],
+    "sublist3r": ["sublist3r"],
+    "netcat":    ["nc"],
+    "tshark":    ["tshark"],
+    "whois":     ["whois"],
+    "medusa":    ["medusa"],
+    "crunch":    ["crunch"],
+    "rsf":       ["python3", "/opt/routersploit/rsf.py"],
+    "burp":      ["burpsuite"],
+    "msf":       ["msfconsole", "-q", "-x"],
 }
 
 def build_command(tool: str, args: list[str]) -> list[str]:
