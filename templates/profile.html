@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Profile - Master Peon</title>
+<link rel="stylesheet" href="/static/css/user_theme.css">
+</head>
+<body>
+<div class="auth-box wide">
+  <h1>PROFILE</h1>
+  <div id="me-box" class="me-box">Loading...</div>
+  <h3>Recent tool requests</h3>
+  <div id="req-list"></div>
+  <a class="btn-gold" href="/index.html">Back to chat</a>
+</div>
+<script src="/static/js/auth.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+(async()=>{
+  if(!Auth.get()) location.href='/login.html';
+  const r=await Auth.api('/api/me'); const m=await r.json();
+  $('#me-box').innerHTML='Tier: <b>'+m.tier.toUpperCase()+'</b> · Expiry: '+(m.expiry||'never')+
+    '<br>Chats: '+m.chats_today+'/'+(m.chat_limit||'unlimited')+
+    ' · Tools: '+m.tool_calls_today+'/'+(m.tool_limit||'unlimited')+
+    '<br>Allowed: '+m.allowed_tools.join(', ');
+  const r2=await Auth.api('/api/tool_requests/mine'); const list=await r2.json();
+  $('#req-list').innerHTML=list.map(x=>
+    '<div class="req '+x.status.toLowerCase()+'">#'+x.id+' '+x.tool+' - '+x.status+
+    (x.output?'<pre>'+x.output.slice(-600)+'</pre>':'')+
+    (x.reason?'<div class="deny">'+x.reason+'</div>':'')+'</div>').join('')||'<p class="muted">None yet</p>';
+})();
+</script>
+</body>
+</html>

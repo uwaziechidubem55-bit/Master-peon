@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Register - Master Peon</title>
+<link rel="stylesheet" href="/static/css/user_theme.css">
+</head>
+<body>
+<div class="auth-box wide">
+  <h1>CREATE ACCOUNT</h1>
+  <form id="reg-form">
+    <input id="username" placeholder="Username" required>
+    <input id="email" type="email" placeholder="Email" required>
+    <input id="password" type="password" placeholder="Password (min 6)" minlength="6" required>
+    <div class="cam-step">
+      <p>1) Show a SMILING face, then Capture</p>
+      <video id="cam1" autoplay playsinline muted></video>
+      <canvas id="cv1" class="hidden"></canvas>
+      <button type="button" class="btn-gold" id="snap1">Capture Smile</button>
+    </div>
+    <div class="cam-step">
+      <p>2) Show a VEXED/ANGRY face, then Capture</p>
+      <video id="cam2" autoplay playsinline muted></video>
+      <canvas id="cv2" class="hidden"></canvas>
+      <button type="button" class="btn-gold" id="snap2">Capture Vex</button>
+    </div>
+    <button class="btn-gold" type="submit">Create Account</button>
+  </form>
+  <div id="err" class="err"></div>
+</div>
+<script src="/static/js/auth.js"></script>
+<script src="/static/js/selfie.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+let stream=null, s1=null, s2=null;
+(async()=>{
+  try{ stream=await openCam($('#cam1')); $('#cam2').srcObject=stream; }
+  catch(e){ $('#err').textContent='Camera access denied - allow camera and reload.'; }
+})();
+$('#snap1').onclick=()=>{s1=snap($('#cam1'),$('#cv1'));$('#snap1').textContent='Captured';};
+$('#snap2').onclick=()=>{s2=snap($('#cam2'),$('#cv2'));$('#snap2').textContent='Captured';};
+$('#reg-form').addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!s1||!s2){$('#err').textContent='Capture BOTH selfies first.';return;}
+  const body={username:$('#username').value.trim(),email:$('#email').value.trim(),
+    password:$('#password').value,selfie_smile:s1,selfie_vex:s2};
+  const r=await fetch('/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(body)});
+  const d=await r.json();
+  if(r.status!==200){$('#err').textContent=d.detail||'Registration failed';return;}
+  Auth.set(d.token);
+  if(stream) stream.getTracks().forEach(t=>t.stop());
+  location.href='/index.html';
+});
+</script>
+</body>
+</html>

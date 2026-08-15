@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Master Peon</title>
+<link rel="stylesheet" href="/static/css/user_theme.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">MASTER PEON</div>
+  <div class="userbox">
+    <span id="u-name"></span> · <span id="u-tier"></span>
+    <span id="u-usage"></span>
+    <button id="logout" class="btn-gold">Logout</button>
+  </div>
+</header>
+<main class="chat-wrap">
+  <section class="chat-pane">
+    <div id="messages" class="messages"></div>
+    <form id="chat-form" class="chat-form">
+      <input id="chat-input" placeholder="e.g. scan 192.168.1.1 with nmap" autocomplete="off">
+      <button class="btn-gold" type="submit">Send</button>
+    </form>
+  </section>
+  <aside class="req-pane">
+    <h3>Your Tool Requests</h3>
+    <div id="req-list"></div>
+  </aside>
+</main>
+<script src="/static/js/auth.js"></script>
+<script src="/static/js/app.js"></script>
+</body>
+</html>

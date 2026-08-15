@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Login - Master Peon</title>
+<link rel="stylesheet" href="/static/css/user_theme.css">
+</head>
+<body>
+<div class="auth-box">
+  <h1>MASTER PEON</h1>
+  <p class="tagline">Sign in to continue</p>
+  <form id="login-form">
+    <input id="email" placeholder="Email" required>
+    <input id="password" type="password" placeholder="Password" required>
+    <button class="btn-gold" type="submit">Login</button>
+  </form>
+  <p class="muted">No account? <a href="/register.html">Create one</a></p>
+  <div id="err" class="err"></div>
+</div>
+<script src="/static/js/auth.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+$('#login-form').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const r=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({email:$('#email').value.trim(),password:$('#password').value})});
+  const d=await r.json();
+  if(r.status!==200){$('#err').textContent=d.detail||'Login failed';return;}
+  Auth.set(d.token); location.href='/index.html';
+});
+</script>
+</body>
+</html>

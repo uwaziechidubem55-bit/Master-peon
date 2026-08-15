@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>.</title>
+<link rel="stylesheet" href="/static/css/admin_theme.css">
+</head>
+<body>
+<div id="login-view" class="auth-box">
+  <h1>ACCESS</h1>
+  <form id="admin-login">
+    <input id="auser" placeholder="Username" required>
+    <input id="apass" type="password" placeholder="Password" required>
+    <button class="btn-gold" type="submit">Enter</button>
+  </form>
+  <div id="aerr" class="err"></div>
+</div>
+
+<div id="panel" class="hidden">
+  <header class="topbar">
+    <div class="brand">MASTER PEON · COMMAND</div>
+    <button id="alogout" class="btn-gold">Exit</button>
+  </header>
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="t-stats">Dashboard</button>
+    <button class="tab-btn" data-tab="t-queue">Approvals</button>
+    <button class="tab-btn" data-tab="t-users">Users</button>
+    <button class="tab-btn" data-tab="t-pricing">Pricing</button>
+    <button class="tab-btn" data-tab="t-policy">Policy</button>
+    <button class="tab-btn" data-tab="t-tools">Tools</button>
+    <button class="tab-btn" data-tab="t-finance">Finance</button>
+  </nav>
+
+  <main>
+    <section id="t-stats" class="tabpane">
+      <div class="cards">
+        <div class="stat-card"><h3>Users</h3><p id="s-users">-</p></div>
+        <div class="stat-card"><h3>Pending</h3><p id="s-pending">-</p></div>
+        <div class="stat-card"><h3>Revenue</h3><p id="s-rev">-</p></div>
+      </div>
+    </section>
+
+    <section id="t-queue" class="tabpane hidden">
+      <h2>Approval Queue</h2><div id="q-list"></div>
+    </section>
+
+    <section id="t-users" class="tabpane hidden">
+      <h2>Users</h2><div id="u-list"></div>
+    </section>
+
+    <section id="t-pricing" class="tabpane hidden">
+      <h2>Limits &amp; Prices</h2><div id="p-edit"></div>
+      <button id="p-save" class="btn-gold">Save Limits</button>
+    </section>
+
+    <section id="t-policy" class="tabpane hidden">
+      <h2>Policy (one rule per line)</h2>
+      <textarea id="p-rules" rows="8" class="wide"></textarea><br>
+      <button id="p-enforce" class="btn-gold">Enforce Policy</button>
+    </section>
+
+    <section id="t-tools" class="tabpane hidden">
+      <h2>Owner Tool Console (bypasses queue)</h2>
+      <select id="t-tool">
+        <option>nmap</option><option>nikto</option><option>sqlmap</option>
+        <option>hydra</option><option>john</option><option>hashcat</option>
+        <option>tcpdump</option><option>rsf</option><option>burp</option><option>msf</option>
+      </select>
+      <input id="t-args" placeholder="args separated by spaces, e.g. -sV 10.0.0.1">
+      <button class="btn-gold" onclick="runTool()">Run</button>
+      <pre id="t-out" class="out"></pre>
+    </section>
+
+    <section id="t-finance" class="tabpane hidden">
+      <h2>Finance</h2>
+      <p>Flutterwave balance: <b id="f-bal">-</b></p>
+      <input id="f-amt" type="number" placeholder="Amount to withdraw">
+      <button id="f-withdraw" class="btn-gold">Withdraw to bank</button>
+      <pre id="f-out" class="out"></pre>
+    </section>
+  </main>
+</div>
+<script src="/static/js/auth.js"></script>
+<script src="/static/js/admin.js"></script>
+</body>
+</html>

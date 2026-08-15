@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pricing - Master Peon</title>
+<link rel="stylesheet" href="/static/css/user_theme.css">
+</head>
+<body>
+<div class="pricing">
+  <h1>CHOOSE YOUR TIER</h1>
+  <div class="period-toggle">
+    <button id="per-m" class="btn-gold active">Monthly</button>
+    <button id="per-y" class="btn-gold">Yearly (2 months free)</button>
+  </div>
+  <div class="cards">
+    <div class="tier-card">
+      <h2>FREE</h2><p id="pr-free">$0</p>
+      <ul><li>5 chats / day</li><li>3 tools</li></ul>
+      <button class="btn-gold" onclick="buy('free')">Free</button>
+    </div>
+    <div class="tier-card gold">
+      <h2>PRO</h2><p id="pr-pro">$15 / month</p>
+      <ul><li>50 chats / day</li><li>5 tools</li></ul>
+      <button class="btn-gold" onclick="buy('pro')">Choose Pro</button>
+    </div>
+    <div class="tier-card">
+      <h2>MASTER</h2><p id="pr-master">$50 / month</p>
+      <ul><li>Unlimited chats</li><li>8 tools</li></ul>
+      <button class="btn-gold" onclick="buy('master')">Choose Master</button>
+    </div>
+  </div>
+  <div id="perr" class="err"></div>
+</div>
+<script src="/static/js/auth.js"></script>
+<script src="/static/js/flutterwave.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+let period='month';
+$('#per-m').onclick=()=>{period='month';$('#pr-pro').textContent='$15 / month';$('#pr-master').textContent='$50 / month';};
+$('#per-y').onclick=()=>{period='year';$('#pr-pro').textContent='$150 / year';$('#pr-master').textContent='$500 / year';};
+async function buy(tier){
+  if(!Auth.get()){location.href='/login.html';return;}
+  try{ await buyTier(tier,period); }catch(e){ $('#perr').textContent=e.message; }
+}
+</script>
+</body>
+</html>
