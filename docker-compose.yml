@@ -1,10 +1,14 @@
 services:
   app:
     build: .
-    env_file: .env
+    # 1. Tells Docker to look inside the mapped storage folder for your secrets
+    env_file: /app/secrets/.env
     volumes:
       - app_data:/app/data
+      # 2. Maps your phone or Oracle host folder directly into the app container
+      - /sdcard/project_secrets:/app/secrets
     restart: unless-stopped
+    
   caddy:
     image: caddy:2
     ports: ["80:80", "443:443"]
