@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     admin_secret_path: str = "/.x"
     llm_api_key: str = ""
     llm_model: str = "gemini-2.5-flash"
-    llm_endpoint: str = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
+    llm_endpoint: str = "https://googleapis.com"
     flw_public_key: str = ""
     flw_secret_key: str = ""
     flw_webhook_hash: str = ""
