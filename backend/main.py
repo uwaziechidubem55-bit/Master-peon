@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime, timezone
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.staticfiles import StaticFiles
@@ -15,6 +16,24 @@ from backend.ai_engine.brain import brain
 from backend.policy_engine import check_request
 from backend.routers import payments, admin_api
 from backend.tool_modules.executor import TOOL_COMMANDS
+
+MCP_SERVERS = {
+    "brave-search": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+        "env": {
+            "BRAVE_API_KEY": os.getenv("BRAVE_API_KEY", ""),
+        },
+    },
+    "fetch": {
+        "command": "uvx",
+        "args": ["mcp-server-fetch"],
+    },
+    "postgres": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-postgres", os.getenv("DATABASE_URL", settings.database_url)],
+    },
+}
 
 Base.metadata.create_all(bind=engine)
 
