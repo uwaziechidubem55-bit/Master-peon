@@ -9,8 +9,8 @@ log = logging.getLogger("brain")
 class Brain:
     def __init__(self):
         self.client = httpx.AsyncClient(timeout=60.0)
-        self.endpoint = os.getenv("LLM_ENDPOINT", "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions")
-
+        self.endpoint = os.getenv("LLM_ENDPOINT", "
+https://googleapis.com"
     async def chat(self, user_message: str, tier: str, allowed_tools: list[str]) -> dict:
         if not settings.llm_api_key:
             return {"reply": "AI brain not configured (LLM_API_KEY missing). Contact admin."}
