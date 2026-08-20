@@ -1,9 +1,9 @@
 # Third Party Licenses and Attributions
-## Master P.E.A.N - Penetration & Everything AI Navigator
+## Master poen - Penetration & Everything AI Navigator
 
-This project, Master P.E.A.N, is licensed under GPLv3. It bundles and orchestrates the following third-party software. We are grateful to all the open-source maintainers.
+This project, Master poen, is licensed under GPLv3. It bundles and orchestrates the following third-party software. We are grateful to all the open-source maintainers.
 
-Master P.E.A.N does not modify these tools. They are executed as separate processes.
+Master poen does not modify these tools. They are executed as separate processes.
 
 ---
 
@@ -81,6 +81,6 @@ This project uses `kalilinux/kali-rolling` as base image. Kali contains thousand
 
 ### Disclaimer
 All trademarks and registered trademarks are the property of their respective owners. 
-Master P.E.A.N is not affiliated with, endorsed by, or sponsored by any of the tool authors listed above.
+Master poen is not affiliated with, endorsed by, or sponsored by any of the tool authors listed above.
 
 For full license text of any dependency, please refer to the source links above or run `apt show [package-name]` inside the container.
