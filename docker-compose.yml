@@ -1,23 +1,44 @@
 services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: master
+      POSTGRES_PASSWORD: master
+      POSTGRES_DB: masterpeon
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U master -d masterpeon"]
+      interval: 10s
+      retries: 5
+
   app:
     build: .
-    # 1. Tells Docker to look inside the mapped storage folder for your secrets
+    depends_on:
+      db:
+        condition: service_healthy
     env_file: /app/secrets/.env
     volumes:
       - app_data:/app/data
-      # 2. Maps your phone or Oracle host folder directly into the app container
+      # Your .env is at /sdcard/project_secrets/.env on your phone
+      # This mounts that folder so the app reads the secrets
       - /sdcard/project_secrets:/app/secrets
     restart: unless-stopped
-    
+
   caddy:
     image: caddy:2
-    ports: ["80:80", "443:443"]
+    ports:
+      - "80:80"
+      - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
-    depends_on: [app]
+    depends_on:
+      - app
     restart: unless-stopped
 
 volumes:
+  pg_data:
   app_data:
   caddy_data:
