@@ -1,4 +1,7 @@
-// ===== TERMINAL ENGINE =====
+// ===== MASTER PEON REAL TERMINAL =====
+// This is a real terminal connected to /bin/sh on the Kali container.
+// Everything works: pipes, redirects, git, apt, pip, python, etc.
+
 const Term = (() => {
   const outputEl = () => $('#terminal-output');
   const inputEl = () => $('#terminal-input');
@@ -9,16 +12,15 @@ const Term = (() => {
   let terminalOpen = false;
 
   function init() {
-    // Load tool generators on startup
     loadGenerators();
 
-    // Terminal input handling
+    // Enter to run
     inputEl().addEventListener('keydown', e => {
       if (e.key === 'Enter') {
         e.preventDefault();
         runCommand();
       }
-      // History navigation
+      // History: Up/Down
       if (e.key === 'ArrowUp') {
         e.preventDefault();
         if (commandHistory.length === 0) return;
@@ -35,7 +37,7 @@ const Term = (() => {
         historyIndex--;
         inputEl().value = commandHistory[commandHistory.length - 1 - historyIndex];
       }
-      // Ctrl+Space to toggle generators
+      // Ctrl+Space → generators panel
       if (e.ctrlKey && e.key === ' ') {
         e.preventDefault();
         toggleGenerators();
@@ -50,10 +52,10 @@ const Term = (() => {
     // Run button
     $('#terminal-run').addEventListener('click', runCommand);
 
-    // Clear button
+    // Clear
     $('#terminal-clear').addEventListener('click', () => {
       outputEl().innerHTML = '';
-      writeLine('', 'term-welcome', 'Terminal cleared. Type help for commands.');
+      writeLine('term-welcome', 'Terminal cleared. Type help for commands.');
     });
 
     // Toggle generators
@@ -68,7 +70,7 @@ const Term = (() => {
       terminalOpen = false;
     });
 
-    // Keyboard shortcut Ctrl+`
+    // Ctrl+` toggle
     document.addEventListener('keydown', e => {
       if (e.ctrlKey && e.key === '`') {
         e.preventDefault();
@@ -81,7 +83,6 @@ const Term = (() => {
       }
     });
 
-    // Write initial welcome
     writeWelcome();
   }
 
@@ -94,29 +95,37 @@ const Term = (() => {
   function writeWelcome() {
     const out = outputEl();
     out.innerHTML = '';
-    writeLine('', 'term-banner', '╔══════════════════════════════════════════╗');
-    writeLine('', 'term-banner', '║        MASTER PEON TERMINAL v1.0          ║');
-    writeLine('', 'term-banner', '║     AI-Assisted Penetration Testing       ║');
-    writeLine('', 'term-banner', '╚══════════════════════════════════════════╝');
-    writeLine('', '', '');
-    writeLine('', 'term-welcome', '  Type "help" for available commands');
-    writeLine('', 'term-welcome', '  Type "tools" to see your available tools');
-    writeLine('', 'term-welcome', '  Type "generate <tool>" for command templates');
-    writeLine('', 'term-welcome', '  Press Ctrl+Space to browse tool generators');
-    writeLine('', 'term-welcome', '  Press Up/Down for command history');
-    writeLine('', 'term-welcome', '  Press Tab for command completion');
-    writeLine('', '', '');
+    writeLine('term-banner', '╔══════════════════════════════════════════════════╗');
+    writeLine('term-banner', '║        MASTER PEON REAL TERMINAL v1.0           ║');
+    writeLine('term-banner', '║     Full shell — /bin/sh on Kali Linux          ║');
+    writeLine('term-banner', '╚══════════════════════════════════════════════════╝');
+    writeLine('', '');
+    writeLine('term-welcome', '  This is a REAL terminal. Everything works:');
+    writeLine('term-welcome', '  → git clone, apt install, pip install, python3');
+    writeLine('term-welcome', '  → pipes (|), redirects (>), variables ($HOME)');
+    writeLine('term-welcome', '  → cd, ls, cat, grep, curl, wget, nmap, sqlmap');
+    writeLine('', '');
+    writeLine('term-section', '  Commands:');
+    writeLine('term-cmd', '    help              Show this help');
+    writeLine('term-cmd', '    tools             List your available pentesting tools');
+    writeLine('term-cmd', '    generate <tool>   Show command templates');
+    writeLine('term-cmd', '    clear             Clear screen');
+    writeLine('term-cmd', '    history           Show command history');
+    writeLine('', '');
+    writeLine('term-section', '  Shortcuts:');
+    writeLine('term-cmd', '    Ctrl+`       Toggle terminal');
+    writeLine('term-cmd', '    Ctrl+Space   Browse tool command generators');
+    writeLine('term-cmd', '    Up/Down      Command history');
+    writeLine('term-cmd', '    Tab          Auto-complete');
+    writeLine('', '');
+    writeLine('term-welcome', '  📋 Click the clipboard icon in the header for tool generators.');
     updatePrompt();
   }
 
-  function writeLine(type, cls, text) {
+  function writeLine(cls, text) {
     const line = document.createElement('div');
     line.className = 'term-line' + (cls ? ' ' + cls : '');
-    if (type === 'input') {
-      line.innerHTML = '<span class="term-prompt-inline">peon@kali:~$</span> ' + escapeHtml(text);
-    } else {
-      line.textContent = text;
-    }
+    line.textContent = text;
     outputEl().appendChild(line);
     outputEl().scrollTop = outputEl().scrollHeight;
   }
@@ -129,6 +138,14 @@ const Term = (() => {
       div.textContent = line;
       outputEl().appendChild(div);
     }
+    outputEl().scrollTop = outputEl().scrollHeight;
+  }
+
+  function writeInputLine(cmd) {
+    const line = document.createElement('div');
+    line.className = 'term-line';
+    line.innerHTML = '<span class="term-prompt-inline">peon@kali:~$</span> ' + escapeHtml(cmd);
+    outputEl().appendChild(line);
     outputEl().scrollTop = outputEl().scrollHeight;
   }
 
@@ -154,10 +171,10 @@ const Term = (() => {
     commandHistory.push(cmd);
     historyIndex = -1;
 
-    // Show input line
-    writeLine('input', '', cmd);
+    // Show input
+    writeInputLine(cmd);
 
-    // Built-in commands
+    // Built-in commands (client-side only)
     if (cmd === 'clear') {
       outputEl().innerHTML = '';
       writeWelcome();
@@ -168,7 +185,7 @@ const Term = (() => {
       return;
     }
     if (cmd === 'history') {
-      commandHistory.forEach((c, i) => writeLine('', '', (i+1) + '  ' + c));
+      commandHistory.forEach((c, i) => writeLine('', '  ' + (i+1) + '  ' + c));
       return;
     }
     if (cmd === 'tools' || cmd === 'ls-tools') {
@@ -181,8 +198,8 @@ const Term = (() => {
       return;
     }
 
-    // Send to backend
-    writeLine('', 'term-info', '⏳ Running...');
+    // Send to backend for real execution
+    writeLine('term-info', '⏳ Running...');
     try {
       const r = await Auth.api('/api/terminal/run', {
         method: 'POST',
@@ -191,135 +208,139 @@ const Term = (() => {
       });
       const data = await r.json();
 
-      // Remove the "Running..." line
-      const lines = outputEl().querySelectorAll('.term-line');
-      for (let i = lines.length - 1; i >= 0; i--) {
-        if (lines[i].textContent === '⏳ Running...') {
-          lines[i].remove();
-          break;
-        }
-      }
+      // Remove "Running..." line
+      removeLastLine('⏳ Running...');
 
       if (data.output) {
-        writeOutput(data.output, 'term-output');
+        // Color the output based on context
+        const cls = data.tool ? 'term-output' : '';
+        writeOutput(data.output, cls);
       }
       if (data.exit_code && data.exit_code !== 0) {
-        writeLine('', 'term-error', '\n[!] Exit code: ' + data.exit_code);
+        writeLine('term-error', '\n[!] Exit code: ' + data.exit_code);
       }
     } catch (err) {
-      // Remove the "Running..." line
-      const lines = outputEl().querySelectorAll('.term-line');
-      for (let i = lines.length - 1; i >= 0; i--) {
-        if (lines[i].textContent === '⏳ Running...') {
-          lines[i].remove();
-          break;
-        }
-      }
+      removeLastLine('⏳ Running...');
       
-      if (err.message && err.message.includes('403')) {
-        writeLine('', 'term-error', '[!] Access denied: Tool not available on your tier.');
-        writeLine('', 'term-welcome', '    Upgrade your plan to unlock more tools.');
-      } else if (err.message && err.message.includes('429')) {
-        writeLine('', 'term-error', '[!] Daily tool-call limit reached for your tier.');
-      } else if (err.message && err.message.includes('400')) {
-        // Try to get the detail from the response
-        writeLine('', 'term-error', '[!] ' + (err.detail || 'Invalid command'));
+      let msg = err.message || 'Request failed';
+      if (msg.includes('403')) {
+        writeLine('term-error', '[!] Access denied: Tool not available on your tier.');
+        writeLine('term-welcome', '    Upgrade your plan or use a different command.');
+      } else if (msg.includes('429')) {
+        writeLine('term-error', '[!] Daily tool-call limit reached.');
+      } else if (msg.includes('400')) {
+        writeLine('term-error', '[!] ' + msg.replace('400: ', ''));
       } else {
-        writeLine('', 'term-error', '[!] Error: ' + (err.message || 'Request failed'));
+        writeLine('term-error', '[!] Error: ' + msg);
       }
     }
     outputEl().scrollTop = outputEl().scrollHeight;
   }
 
-  // ===== SHOW HELP =====
+  function removeLastLine(textMatch) {
+    const lines = outputEl().querySelectorAll('.term-line');
+    for (let i = lines.length - 1; i >= 0; i--) {
+      if (lines[i].textContent.includes(textMatch)) {
+        lines[i].remove();
+        break;
+      }
+    }
+  }
+
+  // ===== HELP =====
   async function showHelp() {
-    writeLine('', 'term-title', '═══ MASTER PEON TERMINAL HELP ═══');
-    writeLine('', '', '');
-    writeLine('', 'term-section', 'Built-in Commands:');
-    writeLine('', 'term-cmd', '  clear            Clear terminal screen');
-    writeLine('', 'term-cmd', '  help             Show this help');
-    writeLine('', 'term-cmd', '  history          Show command history');
-    writeLine('', 'term-cmd', '  tools            List available security tools');
-    writeLine('', 'term-cmd', '  generate <tool>  Show command templates for a tool');
-    writeLine('', '', '');
-    writeLine('', 'term-section', 'General Commands (all tiers):');
-    writeLine('', 'term-cmd', '  ls, cat, head, tail, echo, pwd, whoami');
-    writeLine('', 'term-cmd', '  id, date, df, free, uptime, uname, hostname');
-    writeLine('', 'term-cmd', '  grep, find, sort, wc, which, file, stat');
-    writeLine('', '', '');
-    writeLine('', 'term-section', 'Security Tools (tier-dependent):');
-    writeLine('', 'term-cmd', '  Type "tools" to see your available tools');
-    writeLine('', 'term-cmd', '  Type "generate <tool>" for command templates');
-    writeLine('', '', '');
-    writeLine('', 'term-section', 'Shortcuts:');
-    writeLine('', 'term-cmd', '  Ctrl+`          Toggle terminal');
-    writeLine('', 'term-cmd', '  Ctrl+Space      Browse tool command generators');
-    writeLine('', 'term-cmd', '  Up/Down         Command history');
-    writeLine('', 'term-cmd', '  Tab             Command completion');
-    writeLine('', '', '');
-    writeLine('', 'term-welcome', '  Pro tip: Click 📋 in terminal header for tool generators');
+    writeLine('term-title', '═══ MASTER PEON REAL TERMINAL HELP ═══');
+    writeLine('', '');
+    writeLine('term-section', 'Built-in Commands:');
+    writeLine('term-cmd', '  clear             Clear terminal screen');
+    writeLine('term-cmd', '  help              Show this help');
+    writeLine('term-cmd', '  history           Show command history');
+    writeLine('term-cmd', '  tools             List available pentesting tools');
+    writeLine('term-cmd', '  generate <tool>   Show command templates for a tool');
+    writeLine('', '');
+    writeLine('term-section', 'General Commands (everything works):');
+    writeLine('term-cmd', '  git clone <url>           Clone a repository');
+    writeLine('term-cmd', '  apt install <pkg>         Install packages (Pro+)');
+    writeLine('term-cmd', '  pip install <pkg>         Install Python packages (Pro+)');
+    writeLine('term-cmd', '  python3 <script>          Run Python scripts');
+    writeLine('term-cmd', '  curl <url>                Fetch URLs');
+    writeLine('term-cmd', '  wget <url>                Download files');
+    writeLine('term-cmd', '  ls, cat, grep, find       Standard Linux commands');
+    writeLine('term-cmd', '  command1 | command2        Pipes work');
+    writeLine('term-cmd', '  command > file             Redirects work');
+    writeLine('', '');
+    writeLine('term-section', 'Pentesting Tools (tier-dependent):');
+    writeLine('term-cmd', '  Type "tools" to see your available tools');
+    writeLine('term-cmd', '  Type "generate <tool>" for command templates');
+    writeLine('', '');
+    writeLine('term-section', 'Shortcuts:');
+    writeLine('term-cmd', '  Ctrl+`          Toggle terminal');
+    writeLine('term-cmd', '  Ctrl+Space      Browse tool command generators');
+    writeLine('term-cmd', '  Up/Down         Command history');
+    writeLine('term-cmd', '  Tab             Auto-complete tool names');
   }
 
   // ===== SHOW TOOLS =====
   async function showTools() {
-    writeLine('', 'term-title', '═══ YOUR AVAILABLE TOOLS ═══');
-    writeLine('', '', '');
+    writeLine('term-title', '═══ YOUR AVAILABLE PENTESTING TOOLS ═══');
+    writeLine('', '');
     try {
       const r = await Auth.api('/api/terminal/tools');
       const data = await r.json();
-      writeLine('', 'term-welcome', '  Tier: ' + data.tier.toUpperCase());
-      writeLine('', '', '');
+      writeLine('term-welcome', '  Tier: ' + data.tier.toUpperCase());
+      writeLine('term-welcome', '  Tools available: ' + (data.tool_count || 0));
+      writeLine('', '');
       const names = Object.keys(data.tools);
       if (names.length === 0) {
-        writeLine('', 'term-error', '  No tools available on your current tier.');
-      } else {
-        // Show in columns
-        let line = '';
-        names.forEach((name, i) => {
-          line += name.padEnd(16);
-          if ((i + 1) % 4 === 0) {
-            writeLine('', 'term-tool', '  ' + line);
-            line = '';
-          }
-        });
-        if (line) writeLine('', 'term-tool', '  ' + line);
+        writeLine('term-error', '  No pentesting tools on your current tier.');
+        return;
       }
-      writeLine('', '', '');
-      writeLine('', 'term-welcome', '  Use "generate <toolname>" for command templates.');
+      // Display in columns
+      let row = '';
+      names.forEach((name, i) => {
+        row += name.padEnd(14);
+        if ((i + 1) % 5 === 0 || i === names.length - 1) {
+          writeLine('term-tool', '  ' + row);
+          row = '';
+        }
+      });
+      writeLine('', '');
+      writeLine('term-welcome', '  Use "generate <toolname>" for command templates.');
+      writeLine('term-welcome', '  Or press Ctrl+Space to browse generators.');
     } catch (err) {
-      writeLine('', 'term-error', '  Failed to load tools: ' + (err.message || ''));
+      writeLine('term-error', '  Failed: ' + (err.message || ''));
     }
   }
 
-  // ===== SHOW TOOL GENERATORS =====
+  // ===== SHOW GENERATORS =====
   async function showToolGenerators(toolName) {
     try {
       const r = await Auth.api('/api/terminal/tools');
       const data = await r.json();
       const info = data.tools[toolName];
       if (!info) {
-        writeLine('', 'term-error', '  Tool "' + toolName + '" not found or not available on your tier.');
+        writeLine('term-error', '  Tool "' + toolName + '" not found or not on your tier.');
+        writeLine('term-welcome', '  Type "tools" to see available tools.');
         return;
       }
-      writeLine('', 'term-title', '═══ ' + toolName.toUpperCase() + ' — Command Generators ═══');
-      writeLine('', '', '');
+      writeLine('term-title', '═══ ' + toolName.toUpperCase() + ' — Command Generators ═══');
+      writeLine('', '');
       if (!info.generators || info.generators.length === 0) {
-        writeLine('', 'term-welcome', '  No predefined generators. Use tool directly:');
-        writeLine('', 'term-cmd', '  ' + toolName + ' --help');
+        writeLine('term-cmd', '  ' + toolName + ' --help');
         return;
       }
       info.generators.forEach((gen, i) => {
-        writeLine('', 'term-gen-label', '  [' + (i+1) + '] ' + gen.label);
-        writeLine('', 'term-gen-cmd', '      ' + gen.cmd);
+        writeLine('term-gen-label', '  [' + (i+1) + '] ' + gen.label);
+        writeLine('term-gen-cmd', '      $ ' + gen.cmd);
       });
-      writeLine('', '', '');
-      writeLine('', 'term-welcome', '  Click a generator in the 📋 panel to auto-fill.');
+      writeLine('', '');
+      writeLine('term-welcome', '  Click any template in the 📋 panel to auto-fill.');
     } catch (err) {
-      writeLine('', 'term-error', '  Error: ' + (err.message || ''));
+      writeLine('term-error', '  Error: ' + (err.message || ''));
     }
   }
 
-  // ===== LOAD GENERATORS =====
+  // ===== GENERATORS PANEL =====
   async function loadGenerators() {
     try {
       const r = await Auth.api('/api/terminal/tools');
@@ -358,9 +379,7 @@ const Term = (() => {
           item.addEventListener('click', () => {
             inputEl().value = gen.cmd;
             inputEl().focus();
-            // Insert {placeholders} for user to fill
             if (gen.cmd.includes('{')) {
-              // Move cursor to first placeholder
               const start = gen.cmd.indexOf('{');
               inputEl().setSelectionRange(start, start + 1);
             }
@@ -373,8 +392,7 @@ const Term = (() => {
   }
 
   function filterGenerators() {
-    const val = $('#gen-search').value.trim();
-    renderGenerators(val);
+    renderGenerators($('#gen-search').value.trim());
   }
 
   function toggleGenerators() {
@@ -391,39 +409,25 @@ const Term = (() => {
     const input = inputEl();
     const val = input.value.trim();
     if (!val) return;
-
-    // Try to get tools from cache or API
     if (!toolGeneratorsCache) {
       try {
         const r = await Auth.api('/api/terminal/tools');
         toolGeneratorsCache = await r.json();
       } catch (_) { return; }
     }
-
     const toolNames = Object.keys(toolGeneratorsCache.tools);
     const matches = toolNames.filter(t => t.startsWith(val));
-
     if (matches.length === 1) {
       input.value = matches[0] + ' ';
     } else if (matches.length > 1) {
-      // Show matches
-      writeLine('', 'term-welcome', matches.join('  '));
+      writeLine('term-welcome', '  ' + matches.join('  '));
     }
   }
 
-  // ===== PUBLIC API =====
-  return {
-    init,
-    openTerminal,
-    runCommand,
-  };
+  return { init, openTerminal, runCommand };
 })();
 
-// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-  // Wait a moment for auth to load
   setTimeout(() => Term.init(), 500);
 });
-
-// Expose so app.js can trigger
 window.Term = Term;
