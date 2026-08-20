@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     flw_public_key: str = ""
     flw_secret_key: str = ""
     flw_webhook_hash: str = ""
-    flw_forward_token: str = ""   # NEW — must equal the old project's AI_FORWARD_TOKEN
+    flw_forward_token: str = ""
     flw_bank_code: str = ""
     flw_account_number: str = ""
     base_url: str = "http://localhost:8000"
@@ -23,7 +23,8 @@ class Settings(BaseSettings):
 
     tier_limits: dict = {
         "free":   {"chats": 5,  "tools": ["nmap", "nikto", "tcpdump"], "tool_calls": 5,  "price_month": 0,  "price_year": 0},
-        "pro":    {"chats": 50, "tools": ["nmap", "nikto", "tcpdump", "hydra", "john"], "tool_calls": 50, "price_month": 15, "price_year": 150},
+        "pro":    {"chats": 50, "tools": ["nmap", "nikto", "tcpdump", "hydra", "john"], "tool_calls": 50, "price_month": 19, "price_year": 190},
+        "advance":{"chats": 150, "tools": ["nmap", "nikto", "tcpdump", "hydra", "john", "sqlmap", "dirb", "ffuf"], "tool_calls": 150, "price_month": 35, "price_year": 350},
         "master": {"chats": 0,  "tools": ["ALL"], "tool_calls": 0, "price_month": 50, "price_year": 500},
     }
 
