@@ -20,7 +20,7 @@ TOOL_COMMANDS = {
     "rsf":       ["python3", "/opt/routersploit/rsf.py"],
     "burp":      ["burpsuite"],
     "msf":       ["msfconsole", "-q", "-x"],
-    "netdiscover": ["netdiscover", "-i", "wlan0"]
+    "netdiscover": ["netdiscover", "-P"]
 }
 
 def build_command(tool: str, args: list[str]) -> list[str]:
