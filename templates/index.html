@@ -39,19 +39,33 @@
     </div>
   </main>
 
-  <!-- Terminal Drawer -->
+  <!-- TERMINAL DRAWER (REAL TERMINAL) -->
   <div id="terminal-drawer" class="terminal-drawer hidden">
     <div class="terminal-header">
-      <span class="terminal-title">⌨️ Terminal</span>
-      <button id="terminal-close" class="btn-ghost-sm">✕</button>
+      <div class="terminal-header-left">
+        <span class="terminal-title">⌨️ Terminal: peon@kali</span>
+        <span id="term-tier-badge" class="terminal-tier-badge"></span>
+      </div>
+      <div class="terminal-header-right">
+        <button id="term-toggle-generators" class="btn-ghost-sm" title="Toggle tool generators">📋</button>
+        <button id="terminal-clear" class="btn-ghost-sm" title="Clear">⊘</button>
+        <button id="terminal-close" class="btn-ghost-sm" title="Close (Ctrl+`)">✕</button>
+      </div>
     </div>
     <div class="terminal-body">
-      <div id="terminal-output" class="terminal-output">
-        <div class="term-line term-welcome">Welcome to Master Peon Terminal. Run tools directly.</div>
+      <!-- Tool Generators Panel -->
+      <div id="term-generators" class="term-generators hidden">
+        <div class="gen-header">
+          <input id="gen-search" class="gen-search" type="text" placeholder="Search tools..." autocomplete="off">
+        </div>
+        <div id="gen-list" class="gen-list"></div>
       </div>
+      <!-- Terminal Output -->
+      <div id="terminal-output" class="terminal-output"></div>
+      <!-- Terminal Input -->
       <div class="terminal-input-row">
-        <span class="term-prompt">peon@kali:~$</span>
-        <input id="terminal-input" class="terminal-input" type="text" placeholder="e.g. nmap -sV 127.0.0.1" autocomplete="off" spellcheck="false">
+        <span class="term-prompt" id="term-prompt">peon@kali:~$</span>
+        <input id="terminal-input" class="terminal-input" type="text" placeholder="Type a command or tool... (Ctrl+Space for generators)" autocomplete="off" spellcheck="false">
         <button id="terminal-run" class="btn-term">⏎</button>
       </div>
     </div>
@@ -68,10 +82,9 @@
       <!-- Mode Dropdown -->
       <div class="input-btn-wrap">
         <button id="btn-mode" class="input-dropdown-btn">
-          <span class="dropdown-label">Mode</span>
+          <span class="dropdown-label">Ask</span>
           <span class="dropdown-arrow">▾</span>
         </button>
-        <!-- Mode Popup -->
         <div id="mode-popup" class="popup-card popup-mode hidden">
           <div class="popup-option" data-mode="ask">
             <span class="popup-icon">💬</span>
@@ -106,7 +119,6 @@
           <span class="dropdown-label">Model</span>
           <span class="dropdown-arrow">▾</span>
         </button>
-        <!-- Model Popup -->
         <div id="model-popup" class="popup-card popup-model hidden">
           <div class="popup-model-header">Get access to paid models</div>
           <div class="popup-option model-option" data-model="ai-pro">
@@ -164,5 +176,6 @@
 
 <script src="/static/js/auth.js"></script>
 <script src="/static/js/app.js"></script>
+<script src="/static/js/terminal.js"></script>
 </body>
 </html>
