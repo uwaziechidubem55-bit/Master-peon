@@ -18,6 +18,14 @@ RUN git clone --depth 1 https://github.com/sullo/nikto.git /opt/nikto
 RUN git clone --depth 1 https://github.com/thunderstorm-dev/routersploit.git /opt/routersploit \
     && cd /opt/routersploit && python3 -m pip install --no-cache-dir -r requirements.txt
 
+# LinPEAS - Linux Privilege Escalation Awesome Script
+RUN git clone https://github.com/carlospolop/PEASS-ng.git /opt/peass \
+    && ln -s /opt/peass/linpeas/linpeas.sh /usr/local/bin/linpeas
+
+# WinPEAS - Windows Privilege Escalation Awesome Script  
+RUN curl -L https://github.com/carlospolop/PEASS-ng/releases/latest/download/winPEASx64.exe -o /opt/winpeas.exe \
+    && chmod +x /opt/winpeas.exe
+
 # Burp Suite Community - official PortSwigger JAR
 RUN curl -fsSL -o /opt/BurpSuiteCommunity.jar \
     "https://portswigger.net/burp/releases/download?product=community&version=2026.3.3&type=Jar"
