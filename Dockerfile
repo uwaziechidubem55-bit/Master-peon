@@ -3,7 +3,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     metasploit-framework nmap hydra john hashcat tcpdump dirb ffuf whatweb \
-    sublist3r netcat-traditional tshark whois medusa crunch nikto \
+    sublist3r netcat-traditional tshark whois medusa crunch nikto netdiscover \
     python3 python3-pip curl git ca-certificates default-jre xvfb \
     perl libnet-ssleay-perl libwww-perl \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
