@@ -18,7 +18,7 @@ from backend.auth import get_current_user, hash_password, verify_password, make_
 from backend.storage import save_selfie
 from backend.ai_engine.brain import brain
 from backend.policy_engine import check_request
-from backend.routers import payments, admin_api
+from backend.routers import payments, admin_api, terminal
 from backend.tool_modules.executor import TOOL_COMMANDS
 
 MCP_SERVERS = {
@@ -45,6 +45,7 @@ app = FastAPI(title="Master Peon API")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 app.include_router(payments.router)
 app.include_router(admin_api.router)
+app.include_router(terminal.router)
 
 @app.on_event("startup")
 def seed_admin():
