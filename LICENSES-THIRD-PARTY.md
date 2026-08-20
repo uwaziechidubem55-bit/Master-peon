@@ -3,7 +3,7 @@
 
 This project, Master peon, is licensed under GPLv3. It bundles and orchestrates the following third-party software. We are grateful to all the open-source maintainers.
 
-Master poen does not modify these tools. They are executed as separate processes.
+Master peon does not modify these tools. They are executed as separate processes.
 
 ---
 
