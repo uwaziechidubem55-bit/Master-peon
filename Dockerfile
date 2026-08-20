@@ -1,5 +1,15 @@
 FROM kalilinux/kali-rolling
+
+LABEL maintainer="UWAZIE DANIEL CHIDUBEM"
+LABEL description="Master peon - Penetration & AI Navigator"
+LABEL version="1.0.0"
+LABEL license="SPDX-License-Identifier: GPL-3.0-or-later"
+
 ENV DEBIAN_FRONTEND=noninteractive
+
+# Install all your tools here: nmap, sqlmap, etc
+# Copy your backend code
+# CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     metasploit-framework nmap hydra john hashcat tcpdump dirb ffuf whatweb \
