@@ -1,10 +1,10 @@
-# Master poen
+# Master peon
 ### Penetration & Everything AI Navigator
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/Docker-Kali%20Linux-red)](https://www.kali.org)
 
-Master P.E.A.N is an AI-assisted penetration testing platform. It combines a conversational AI with 25+ industry-standard security tools, all containerized on Kali Linux for authorized red team operations.
+Master Peon is an AI-assisted penetration testing platform. It combines a conversational AI with 25+ industry-standard security tools, all containerized on Kali Linux for authorized red team operations.
 
 **Disclaimer: For Authorized Use Only.** See [SAFETY.md](SAFETY.md)
 
@@ -42,7 +42,7 @@ Master P.E.A.N is an AI-assisted penetration testing platform. It combines a con
 ### Installation
 ```bash
 git clone <REPO_URL>
-cd Master-P.E.A.N
+cd Master-peon
 
 cp .env.example .env
 # IMPORTANT: Fill in SECRET_KEY, ADMIN_USERNAME, ADMIN_PASSWORD, DB_URL
