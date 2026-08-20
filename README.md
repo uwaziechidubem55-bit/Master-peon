@@ -1,5 +1,5 @@
 # Master peon
-### Penetration & Everything AI Navigator
+### Penetration & AI Navigator
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/Docker-Kali%20Linux-red)](https://www.kali.org)
