@@ -18,14 +18,19 @@
       <ul><li>5 chats / day</li><li>3 tools</li></ul>
       <button class="btn-gold" onclick="buy('free')">Free</button>
     </div>
-    <div class="tier-card gold">
-      <h2>PRO</h2><p id="pr-pro">$15 / month</p>
+    <div class="tier-card">
+      <h2>PRO</h2><p id="pr-pro">$19 / month</p>
       <ul><li>50 chats / day</li><li>5 tools</li></ul>
       <button class="btn-gold" onclick="buy('pro')">Choose Pro</button>
     </div>
+    <div class="tier-card gold">
+      <h2>ADVANCE</h2><p id="pr-advance">$35 / month</p>
+      <ul><li>150 chats / day</li><li>8 tools</li></ul>
+      <button class="btn-gold" onclick="buy('advance')">Choose Advance</button>
+    </div>
     <div class="tier-card">
       <h2>MASTER</h2><p id="pr-master">$50 / month</p>
-      <ul><li>Unlimited chats</li><li>8 tools</li></ul>
+      <ul><li>Unlimited chats</li><li>All tools</li></ul>
       <button class="btn-gold" onclick="buy('master')">Choose Master</button>
     </div>
   </div>
@@ -36,8 +41,14 @@
 <script>
 const $=s=>document.querySelector(s);
 let period='month';
-$('#per-m').onclick=()=>{period='month';$('#pr-pro').textContent='$15 / month';$('#pr-master').textContent='$50 / month';};
-$('#per-y').onclick=()=>{period='year';$('#pr-pro').textContent='$150 / year';$('#pr-master').textContent='$500 / year';};
+$('#per-m').onclick=()=>{period='month';
+  $('#pr-pro').textContent='$19 / month';
+  $('#pr-advance').textContent='$35 / month';
+  $('#pr-master').textContent='$50 / month';};
+$('#per-y').onclick=()=>{period='year';
+  $('#pr-pro').textContent='$190 / year';
+  $('#pr-advance').textContent='$350 / year';
+  $('#pr-master').textContent='$500 / year';};
 async function buy(tier){
   if(!Auth.get()){location.href='/login.html';return;}
   try{ await buyTier(tier,period); }catch(e){ $('#perr').textContent=e.message; }
