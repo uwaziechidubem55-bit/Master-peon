@@ -1,11 +1,13 @@
 # Master peon - Penetration & AI Navigator
-# Terminal Router — Real shell execution with tier enforcement
+# Terminal Router — Full real shell execution with tool tier enforcement
 # Copyright (C) 2026 UWAZIE DANIEL CHIDUBEM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import asyncio
 import json
+import os
 import shlex
+import subprocess
 from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -18,25 +20,9 @@ from backend.tool_modules.executor import TOOL_COMMANDS, build_command
 
 router = APIRouter(prefix="/api/terminal", tags=["terminal"])
 
-# General Linux commands allowed for all users (non-tool)
-ALLOWED_GENERAL_COMMANDS = {
-    "ls", "cat", "head", "tail", "less", "more", "echo", "pwd", "whoami",
-    "id", "date", "cal", "df", "du", "free", "uptime", "uname", "hostname",
-    "ip", "ss", "ps", "top", "which", "whereis", "find", "grep", "sort",
-    "wc", "cut", "tr", "base64", "md5sum", "sha256sum", "clear", "help",
-    "history", "env", "printenv", "lsblk", "lscpu", "lsusb", "lspci",
-    "dmesg", "who", "w", "last", "finger", "file", "stat", "tree",
-    "mkdir", "touch", "cp", "mv", "rm", "ln", "chmod", "chown",
-    "tar", "gzip", "gunzip", "zip", "unzip", "diff", "cmp",
-}
-
-# Tools available per tier
-TIER_TOOL_MAP = {
-    "free":   {"nmap", "nikto", "tcpdump"},
-    "pro":    {"nmap", "nikto", "tcpdump", "hydra", "john"},
-    "advance": {"nmap", "nikto", "tcpdump", "hydra", "john", "sqlmap", "dirb", "ffuf"},
-    "master":  "ALL",
-}
+# Working directory for terminal sessions
+WORK_DIR = Path("/app/data/terminal")
+SCANS_DIR = Path("/app/data/scans")
 
 # Custom command generators per tool
 TOOL_COMMAND_GENERATORS = {
@@ -143,10 +129,19 @@ TOOL_COMMAND_GENERATORS = {
         {"label": "ARP scan subnet",             "cmd": "netdiscover -r {subnet}"},
         {"label": "Passive discovery",           "cmd": "netdiscover -p"},
     ],
+    "burp": [
+        {"label": "Launch Burp Suite",           "cmd": "burpsuite"},
+    ],
+    "rsf": [
+        {"label": "Launch RouterSploit",         "cmd": "rsf"},
+    ],
+    "pspy": [
+        {"label": "Run pspy process monitor",    "cmd": "pspy"},
+    ],
+    "winpeas": [
+        {"label": "Run WinPEAS",                 "cmd": "winpeas"},
+    ],
 }
-
-SCANS_DIR = Path("/app/data/scans")
-WORK_DIR = Path("/tmp/terminal-sessions")
 
 
 class TerminalCommand(BaseModel):
@@ -163,16 +158,12 @@ def get_user_tools(user: models.User) -> set:
     return set(tools)
 
 
-def is_general_command(cmd: str) -> bool:
-    """Check if a command is a known general Linux command."""
-    parts = cmd.strip().split()
-    if not parts:
-        return False
-    base = parts[0].lstrip("./")
-    # Allow full paths
-    if "/" in base:
-        return True
-    return base in ALLOWED_GENERAL_COMMANDS
+def get_tool_name(cmd_line: str):
+    """Extract the base tool name if it matches a known pentesting tool."""
+    first_word = cmd_line.strip().split()[0].lower() if cmd_line.strip() else ""
+    if first_word in TOOL_COMMANDS:
+        return first_word
+    return None
 
 
 @router.post("/run")
@@ -181,41 +172,59 @@ async def run_terminal(
     user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    """Execute ANY command in a real bash shell.
+    
+    - If the command is a known pentesting tool → checked against tier permission
+    - Everything else → runs unrestricted (git, apt, pip, curl, python3, etc.)
+    """
     cmd_line = body.command.strip()
     if not cmd_line:
         raise HTTPException(400, "Empty command")
 
-    parts = shlex.split(cmd_line)
-    base_cmd = parts[0].lower()
+    # Ensure working directory exists
+    WORK_DIR.mkdir(parents=True, exist_ok=True)
 
-    # --- Check if it's a known pentesting tool ---
-    if base_cmd in TOOL_COMMANDS:
-        # Check tier permission
+    # Check if this is a known pentesting tool
+    tool_name = get_tool_name(cmd_line)
+    is_tool = tool_name is not None
+
+    if is_tool:
+        # Tier permission check
         allowed_tools = get_user_tools(user)
-        if base_cmd not in allowed_tools:
-            raise HTTPException(403, f"Tool '{base_cmd}' not allowed on your tier ({user.tier}). Upgrade to access it.")
+        if tool_name not in allowed_tools:
+            raise HTTPException(
+                403, 
+                f"❌ '{tool_name}' is not available on your tier ({user.tier}).\n"
+                f"Your tier allows: {', '.join(sorted(allowed_tools)) or 'none'}\n"
+                "Upgrade your plan to unlock more pentesting tools."
+            )
 
-        # Check tool call limit
+        # Tool call limit check
         t = settings.tier_limits.get(user.tier, {})
         tlimit = t.get("tool_calls", 0)
         if tlimit and user.tool_calls_today >= tlimit:
-            raise HTTPException(429, "Daily tool-call limit reached for your tier")
+            raise HTTPException(
+                429, 
+                f"❌ Daily tool-call limit ({tlimit}) reached for {user.tier} tier."
+            )
 
-        # Build the command
-        full_cmd = build_command(base_cmd, parts[1:])
+        # Build the tool command using the executor
+        parts = shlex.split(cmd_line)
+        full_cmd = build_command(tool_name, parts[1:])
 
-        # Execute
+        # Increment tool counter
         user.tool_calls_today += 1
         db.commit()
 
-        out_file = SCANS_DIR / f"terminal_{user.id}_{base_cmd}.log"
+        # Execute
+        out_file = SCANS_DIR / f"terminal_{user.id}_{tool_name}_{os.urandom(4).hex()}.log"
         SCANS_DIR.mkdir(parents=True, exist_ok=True)
 
         proc = await asyncio.create_subprocess_exec(
             *full_cmd,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.STDOUT,
-            cwd=str(WORK_DIR) if WORK_DIR.exists() else "/tmp",
+            cwd=str(WORK_DIR),
         )
 
         try:
@@ -223,67 +232,61 @@ async def run_terminal(
         except asyncio.TimeoutError:
             proc.kill()
             stdout, _ = await proc.communicate()
-            stdout += b"\n\n[!] Command timed out after 600s — killed."
+            stdout += b"\n\n[!] Command timed out after 600s — process killed."
 
         out_file.write_bytes(stdout)
         output = stdout.decode(errors="replace")
+
         return {
             "ok": True,
-            "tool": base_cmd,
+            "tool": tool_name,
             "command": cmd_line,
-            "output": output[-50000:],  # last 50KB
+            "output": output[-100000:],
             "exit_code": proc.returncode or 0,
+            "log_file": str(out_file),
         }
 
-    # --- Check if it's an allowed general command ---
-    elif is_general_command(cmd_line):
-        # Execute the raw shell command with a safe allowlist
-        # Master tier gets full shell; others get restricted
-        SAFE_GENERAL = {"cp", "mv", "rm", "mkdir", "touch", "chmod", "chown",
-                        "tar", "gzip", "gunzip", "zip", "unzip"}
+    # ===== GENERAL / UNRESTRICTED COMMAND =====
+    # ANY bash command runs here: git clone, apt install, pip install, 
+    # curl, wget, python3, bash scripts, pipes, redirects, variables, etc.
+    # The command is executed via `/bin/sh -c` for full shell support.
 
-        if user.tier != "master" and base_cmd in SAFE_GENERAL:
-            # Destructive commands only for master
-            raise HTTPException(403, f"Command '{base_cmd}' requires Master tier")
-        
-        if user.tier != "master" and base_cmd in ("rm", "mv") and any(
-            "/" in p or ".." in p for p in parts[1:]
-        ):
-            raise HTTPException(403, "Path traversal not allowed — upgrade to Master for full access")
+    if user.tier == "free":
+        # Free tier: general commands only, no destructive ones
+        free_denied = {"apt", "apt-get", "dpkg", "pip", "pip3", "npm", "git"}
+        first_word = cmd_line.strip().split()[0].lower() if cmd_line.strip() else ""
+        if first_word in free_denied:
+            raise HTTPException(
+                403,
+                f"❌ '{first_word}' requires at least Pro tier.\n"
+                "Free tier is limited to basic read-only commands (ls, cat, pwd, etc.)."
+            )
 
-        proc = await asyncio.create_subprocess_exec(
-            *parts,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.STDOUT,
-            cwd=str(WORK_DIR) if WORK_DIR.exists() else "/tmp",
-        )
+    # Execute via /bin/sh -c for full shell feature support (pipes, redirects, vars)
+    proc = await asyncio.create_subprocess_exec(
+        "/bin/sh", "-c", cmd_line,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.STDOUT,
+        cwd=str(WORK_DIR),
+        env={**os.environ, "HOME": str(WORK_DIR)},
+    )
 
-        try:
-            stdout, _ = await asyncio.wait_for(proc.communicate(), timeout=120)
-        except asyncio.TimeoutError:
-            proc.kill()
-            stdout, _ = await proc.communicate()
-            stdout += b"\n\n[!] Command timed out after 120s — killed."
+    try:
+        stdout, _ = await asyncio.wait_for(proc.communicate(), timeout=300)
+    except asyncio.TimeoutError:
+        proc.kill()
+        stdout, _ = await proc.communicate()
+        stdout += b"\n\n[!] Command timed out after 300s — process killed."
 
-        output = stdout.decode(errors="replace")
-        return {
-            "ok": True,
-            "tool": base_cmd,
-            "command": cmd_line,
-            "output": output[-50000:],
-            "exit_code": proc.returncode or 0,
-        }
+    output = stdout.decode(errors="replace")
 
-    else:
-        # Unknown command
-        from difflib import get_close_matches
-        all_tools = list(TOOL_COMMANDS.keys()) + list(ALLOWED_GENERAL_COMMANDS)
-        suggestions = get_close_matches(base_cmd, all_tools, n=5, cutoff=0.4)
-        msg = f"Unknown command: '{base_cmd}'."
-        if suggestions:
-            msg += f" Did you mean: {', '.join(suggestions)}?"
-        msg += "\nType 'help' for available commands."
-        raise HTTPException(400, msg)
+    return {
+        "ok": True,
+        "tool": None,
+        "command": cmd_line,
+        "output": output[-100000:],
+        "exit_code": proc.returncode or 0,
+    }
 
 
 @router.get("/tools")
@@ -300,6 +303,7 @@ def list_tools(user=Depends(get_current_user)):
         result[tool] = info
     return {
         "tier": user.tier,
+        "tool_count": len(result),
         "tools": result,
     }
 
@@ -308,19 +312,14 @@ def list_tools(user=Depends(get_current_user)):
 def help_text():
     """Return full help info for the terminal."""
     return {
-        "general_commands": sorted(ALLOWED_GENERAL_COMMANDS),
-        "tool_commands": {
-            tool: {
-                "description": f"{tool} — Kali Linux security tool",
-                "generators": TOOL_COMMAND_GENERATORS.get(tool, []),
-            }
-            for tool in sorted(TOOL_COMMANDS.keys())
-        },
+        "info": "Master Peon Real Terminal — executes any command via /bin/sh",
+        "tool_count": len(TOOL_COMMANDS),
+        "tools_with_generators": list(TOOL_COMMAND_GENERATORS.keys()),
         "builtin_commands": [
             {"cmd": "clear",     "desc": "Clear the terminal screen"},
             {"cmd": "help",      "desc": "Show this help message"},
             {"cmd": "history",   "desc": "Show command history"},
-            {"cmd": "tools",     "desc": "List available security tools"},
-            {"cmd": "generate",  "desc": "Show command generators for a tool: generate <toolname>"},
+            {"cmd": "tools",     "desc": "List available security tools for your tier"},
+            {"cmd": "generate <tool>",  "desc": "Show command templates for a tool"},
         ],
     }
