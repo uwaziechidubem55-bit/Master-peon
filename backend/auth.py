@@ -1,3 +1,7 @@
+# Master peon - Penetration & AI Navigator
+# Copyright (C) 2026 UWAZIE DANIEL CHIDUBEM 
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 from datetime import datetime, timedelta, timezone
 import jwt
 from fastapi import Depends, HTTPException
