@@ -22,7 +22,10 @@ TOOL_COMMANDS = {
     "msf": ["msfconsole", "-q", "-x"],
     "netdiscover": ["netdiscover", "-P"],
     "linpeas": ["bash", "/usr/local/bin/linpeas"],
-    "winpeas": ["wine", "/opt/winpeas.exe"]
+    "winpeas": ["wine", "/opt/winpeas.exe"],
+    "pspy": ["/opt/pspy64"],
+    "chisel": ["/opt/chisel"],
+    "ligolo": ["/opt/agent"],
 }
 
 def build_command(tool: str, args: list[str]) -> list[str]:
