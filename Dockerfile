@@ -1,6 +1,7 @@
 FROM kalilinux/kali-rolling
 
-LABEL maintainer="UWAZIE DANIEL CHIDUBEM"
+LABEL maintainer="uwazie daniel chidubem"
+LABEL maintainer_email="danieluwazie952@gmail.com"
 LABEL description="Master peon - Penetration & AI Navigator"
 LABEL version="1.0.0"
 LABEL license="SPDX-License-Identifier: GPL-3.0-or-later"
