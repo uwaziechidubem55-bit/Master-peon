@@ -1,7 +1,8 @@
 import re
 from backend.ai_engine.brain import brain
 from backend.ai_engine.minimax_client import minimax
-from backend.ai_engine.pentest_brain import detect, answer as pentest_answer
+from backend.ai_engine.link_scanner import scan_message, detect_search, web_search
+from backend.ai_engine.pentest_brain import detect as pentest_detect, answer as pentest_answer
 
 REFUSAL_MARKERS = [
     "i cannot", "i can't", "i won't", "i'm sorry", "i am sorry",
@@ -44,7 +45,12 @@ def _score(text: str, has_tool: bool) -> int:
 
 class PersonalBrain:
     async def chat(self, user_message: str, tier: str, allowed_tools: list[str]) -> dict:
-        if detect(user_message):
+        scan_result = await scan_message(user_message)
+        if scan_result:
+            return scan_result
+        if detect_search(user_message):
+            return await web_search(user_message)
+        if pentest_detect(user_message):
             return pentest_answer(user_message)
         gemini_result = await brain.chat(user_message, tier, allowed_tools)
         minimax_result = await minimax.chat(user_message, tier, allowed_tools)
