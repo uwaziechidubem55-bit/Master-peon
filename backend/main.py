@@ -17,6 +17,7 @@ from backend import models
 from backend.auth import get_current_user, hash_password, verify_password, make_token
 from backend.storage import save_selfie
 from backend.ai_engine.brain import brain
+from backend.ai_engine.personal_brain import personal_brain
 from backend.policy_engine import check_request
 from backend.routers import payments, admin_api, terminal
 from backend.tool_modules.executor import TOOL_COMMANDS
@@ -126,7 +127,7 @@ async def chat(b: ChatIn, user=Depends(get_current_user), db: Session = Depends(
     if limit and user.chats_today >= limit:
         raise HTTPException(429, "Daily chat limit reached")
     allowed = list(tier_allowed(user))
-    result = await brain.chat(b.message, user.tier, allowed)
+    result = await personal_brain.chat(b.message, user.tier, allowed)
     db.add(models.ChatMessage(user_id=user.id, role="user", content=b.message))
     user.chats_today += 1
     tr = result.get("tool_request")
