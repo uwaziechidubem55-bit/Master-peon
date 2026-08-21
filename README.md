@@ -20,7 +20,8 @@ Master Peon is an AI-assisted penetration testing platform. It combines a conver
 | **Password Attacks** | `hydra`, `john`, `hashcat`, `medusa`, `crunch` |
 | **Network** | `tcpdump`, `tshark`, `chisel`, `ligolo-ng`, `netcat` |
 | **Post Exploitation** | `linpeas`, `winpeas`, `pspy`, `msfconsole` |
-| **IoT/Router** | `routersploit` |......and so on 
+| **IoT/Router** | `routersploit` |
+| And so on.  |
 
 ---
 
