@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     minimax_api_key: str = ""
     minimax_model: str = "minimaxai/minimax-m3"
     minimax_endpoint: str = "https://integrate.api.nvidia.com/v1/chat/completions"
+    github_token: str = ""
+    brave_api_key: str = ""
     flw_public_key: str = ""
     flw_secret_key: str = ""
     flw_webhook_hash: str = ""
