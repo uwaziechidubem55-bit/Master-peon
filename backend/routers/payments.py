@@ -1,8 +1,8 @@
-i# Master peon - Penetration & AI Navigator
+# Master peon - Penetration & AI Navigator
 # Copyright (C) 2026 UWAZIE DANIEL CHIDUBEM 
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-mport secrets
+import secrets
 from datetime import datetime, timedelta, timezone
 import hmac
 import httpx

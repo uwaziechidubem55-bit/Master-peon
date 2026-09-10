@@ -232,7 +232,7 @@ async def run_terminal(
         except asyncio.TimeoutError:
             proc.kill()
             stdout, _ = await proc.communicate()
-            stdout += b"\n\n[!] Command timed out after 600s — process killed."
+            stdout += b"\n\n[!] Command timed out after 600s - process killed."
 
         out_file.write_bytes(stdout)
         output = stdout.decode(errors="replace")
@@ -276,7 +276,7 @@ async def run_terminal(
     except asyncio.TimeoutError:
         proc.kill()
         stdout, _ = await proc.communicate()
-        stdout += b"\n\n[!] Command timed out after 300s — process killed."
+        stdout += b"\n\n[!] Command timed out after 300s - process killed."
 
     output = stdout.decode(errors="replace")
 

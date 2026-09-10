@@ -28,8 +28,33 @@ async function loadMe() {
   const m = await r.json();
   $('#u-name').textContent = m.username;
   $('#u-tier').textContent = m.tier.toUpperCase();
+  const chatsLimit = m.chat_limit ? `/${m.chat_limit}` : '';
+  const toolsLimit = m.tool_limit ? `/${m.tool_limit}` : '';
+  if ($('#u-stats')) {
+    $('#u-stats').textContent = `[Chats: ${m.chats_today}${chatsLimit} | Tools: ${m.tool_calls_today}${toolsLimit}]`;
+  }
 }
 loadMe();
+
+// ===== QUICK CHIPS & TERMINAL TOGGLE =====
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('chip')) {
+    const prompt = e.target.getAttribute('data-prompt');
+    if (prompt) {
+      const input = $('#chat-input');
+      input.value = prompt;
+      input.focus();
+    }
+  }
+});
+
+if ($('#btn-quick-term')) {
+  $('#btn-quick-term').addEventListener('click', () => {
+    if (window.Term && window.Term.openTerminal) {
+      window.Term.openTerminal();
+    }
+  });
+}
 
 // ===== MESSAGE SYSTEM =====
 function addMsg(role, text) {
@@ -40,6 +65,23 @@ function addMsg(role, text) {
   const b = document.createElement('div');
   b.className = 'bubble';
   b.textContent = text;
+
+  if (role === 'bot') {
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'btn-copy-msg';
+    copyBtn.textContent = '📋 Copy';
+    copyBtn.title = 'Copy response to clipboard';
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(text).then(() => {
+        copyBtn.textContent = '✅ Copied';
+        setTimeout(() => { copyBtn.textContent = '📋 Copy'; }, 2000);
+      }).catch(() => {
+        copyBtn.textContent = '❌ Failed';
+      });
+    });
+    b.appendChild(copyBtn);
+  }
+
   d.appendChild(b);
   $('#messages').appendChild(d);
   $('#messages').scrollTop = $('#messages').scrollHeight;
