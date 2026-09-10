@@ -9,8 +9,21 @@
 <!-- LOADING SCREEN -->
 <div id="loading-screen" class="loading-screen">
   <div class="loading-content">
-    <div class="loading-logo">🧠</div>
-    <p class="loading-text">Initializing AI...</p>
+    <div class="loading-logo">
+      <svg class="brand-logo-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="32,4 56,16 56,38 32,58 8,38 8,16" fill="url(#logo-grad)" stroke="#FFD700" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M20 24L32 16L44 24V34L32 44L20 34V24Z" fill="#0A0E14" stroke="#00FF66" stroke-width="2"/>
+        <circle cx="32" cy="29" r="4" fill="#00FF66"/>
+        <path d="M26 38H38" stroke="#FFD700" stroke-width="2" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="logo-grad" x1="8" y1="4" x2="56" y2="58" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#1A2332"/>
+            <stop offset="1" stop-color="#0A0E14"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <p class="loading-text">MASTER PEON OS :: INITIALIZING AI</p>
   </div>
 </div>
 
@@ -19,11 +32,26 @@
   <!-- Header -->
   <header class="chat-header">
     <div class="header-left">
+      <svg class="brand-header-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="32,4 56,16 56,38 32,58 8,38 8,16" fill="url(#logo-grad-sm)" stroke="#FFD700" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M20 24L32 16L44 24V34L32 44L20 34V24Z" fill="#0A0E14" stroke="#00FF66" stroke-width="2.5"/>
+        <circle cx="32" cy="29" r="3.5" fill="#00FF66"/>
+        <defs>
+          <linearGradient id="logo-grad-sm" x1="8" y1="4" x2="56" y2="58" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#1A2332"/>
+            <stop offset="1" stop-color="#0A0E14"/>
+          </linearGradient>
+        </defs>
+      </svg>
       <span class="brand-text">MASTER PEON</span>
     </div>
     <div class="header-right">
-      <span id="u-name" class="header-user"></span>
-      <span id="u-tier" class="header-tier"></span>
+      <button id="btn-quick-term" class="btn-header-term" title="Open Terminal (Ctrl+`)">⚡ Terminal</button>
+      <div id="u-badge" class="user-usage-badge" title="Tier and Usage Metrics">
+        <span id="u-name" class="header-user"></span>
+        <span id="u-tier" class="header-tier"></span>
+        <span id="u-stats" class="header-stats"></span>
+      </div>
       <button id="logout" class="btn-ghost">Logout</button>
     </div>
   </header>
@@ -32,9 +60,28 @@
   <main class="chat-main" id="chat-main">
     <div id="messages" class="messages">
       <div class="welcome-msg">
-        <div class="welcome-icon">🧠</div>
-        <h2>What's in your mind?</h2>
-        <p class="welcome-sub">Ask hacking questions, run pentesting tools, or deploy an Agent to hack, test, and secure anything.</p>
+        <div class="welcome-icon">
+          <svg class="brand-welcome-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="32,4 56,16 56,38 32,58 8,38 8,16" fill="url(#logo-grad-lg)" stroke="#FFD700" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M20 24L32 16L44 24V34L32 44L20 34V24Z" fill="#0A0E14" stroke="#00FF66" stroke-width="2"/>
+            <circle cx="32" cy="29" r="4" fill="#00FF66"/>
+            <path d="M26 38H38" stroke="#FFD700" stroke-width="2" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="logo-grad-lg" x1="8" y1="4" x2="56" y2="58" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#1A2332"/>
+                <stop offset="1" stop-color="#0A0E14"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <h2>Master Peon AI Navigator</h2>
+        <p class="welcome-sub">Ask hacking questions, run automated security tools, or deploy an AI Agent to assess, test, and secure targets.</p>
+        <div class="quick-chips">
+          <button class="chip" data-prompt="Scan top open ports and services on 127.0.0.1 using Nmap">🔍 Port Scan Target</button>
+          <button class="chip" data-prompt="Run Nikto web vulnerability scanner on http://127.0.0.1">🌐 Web Vuln Audit</button>
+          <button class="chip" data-prompt="Perform subdomain enumeration for example.com using sublist3r">📡 Subdomain Recon</button>
+          <button class="chip" data-prompt="Explain local linux privilege escalation enumeration steps with linpeas">🛡️ Privilege Escalation Check</button>
+        </div>
       </div>
     </div>
   </main>
