@@ -23,7 +23,7 @@ TOOL_COMMANDS = {
     "crunch": ["crunch"],
     "hash-identifier": ["hash-identifier"],
     "rsf": ["python3", "/opt/routersploit/rsf.py"],
-    "burp": ["burpsuite"],
+    "burp": ["java", "-jar", "/opt/BurpSuiteCommunity.jar"],
     "msf": ["msfconsole", "-q", "-x"],
     "netdiscover": ["netdiscover", "-P"],
     "linpeas": ["bash", "/usr/local/bin/linpeas"],
